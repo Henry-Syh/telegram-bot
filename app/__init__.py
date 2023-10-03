@@ -1,6 +1,12 @@
+import asyncio
+
 from sanic import Blueprint, Sanic
 from sanic.response import text
 from sanic_ext import Extend
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+from app.telegram import init
 
 from .webhook import webhookBlueprint
 
@@ -24,9 +30,12 @@ def create_app():
 
     return app
 
-
 app = create_app()
 
+@app.after_server_start
+async def tele_init(app, loop):
+    print("listener_4")
+    app.ctx.tele_app = await init()
 
 @app.get("/check")
 async def check(request):
